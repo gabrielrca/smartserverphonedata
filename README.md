@@ -16,12 +16,20 @@ Essa aplicação permite enviar leituras dos sensores do celular em formato de s
 ##Exemplos de leituras que o app "Sensor Fusion" envia
 
 Acelerometro b'6200564\tACC\t-2.7006595\t6.0142345\t6.6367273\n'
+
 Giroscopio  b'6328404\tGYR\t0.005497787\t-0.053145275\t-0.0125227375\n'
+
 Luz  b'6350559\tLGT\t8.0\n'
+
 Campo Magnetico b'6367457\tMAG\t8.16\t4.68\t19.26\n'
+
 Campo Magnetico (raw)  b'6402289\tRAWMAG\t3.0\t-5.4\t26.939999\t-6.0\t5.94\t15.059999\n'
+
 Orientacao  b'6427494\tORI\t0.15982673\t0.30954745\t0.08656577\t-0.93334997\n'
+
 Pressao  b'6451856\tPRS\t1016.697\n'
+
 Proximidade  b'6480979\tPRX\t0.0\n' (PERTO) ou (LONGE) ('192.168.1.23', 56212) b'6481329\tPRX\t8.0\n'
+
 
 O app também envia leituras de GPS e RSS, mas em meus testes nao recebi leituras de GPS, RSS (cell) e RSS (wifi).
