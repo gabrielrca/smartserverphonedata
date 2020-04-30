@@ -149,15 +149,3 @@ if __name__ == '__main__':
     Main() 
 
 
-'''
-Exemplos de leituras
-Acelerometro ('192.168.1.23', 37290) b'6200564\tACC\t-2.7006595\t6.0142345\t6.6367273\n'
-Giroscopio ('192.168.1.23', 38247) b'6328404\tGYR\t0.005497787\t-0.053145275\t-0.0125227375\n'
-Luz ('192.168.1.23', 49436) b'6350559\tLGT\t8.0\n'
-Campo Magnetico ('192.168.1.23', 58082) b'6367457\tMAG\t8.16\t4.68\t19.26\n'
-Campo Magnetico (raw) ('192.168.1.23', 53522) b'6402289\tRAWMAG\t3.0\t-5.4\t26.939999\t-6.0\t5.94\t15.059999\n'
-Orientacao ('192.168.1.23', 55044) b'6427494\tORI\t0.15982673\t0.30954745\t0.08656577\t-0.93334997\n'
-Pressao ('192.168.1.23', 50803) b'6451856\tPRS\t1016.697\n'
-Proximidade ('192.168.1.23', 56212) b'6480979\tPRX\t0.0\n' (PERTO) ou (LONGE) ('192.168.1.23', 56212) b'6481329\tPRX\t8.0\n'
-Nao vi leituras em GPS, RSS (cell) e RSS (wifi)
-'''
