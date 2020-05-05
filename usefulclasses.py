@@ -6,14 +6,14 @@ class reading:
     ip=''           #Endereco IP do dispositivo
     port=''         #Porta TCP que o dispositivo usou pra se conectar
     numRead=''      #Numero que o aplicativo me manda (ainda nao sei o que eh)
-    Acel =''        #valor da leitura do acelerometro - ACC
-    Giros =''       #valor da leitura do giroscopio - GYR
-    Luz =''         #valor da leitura de luminosidade - LGT
-    MagField =''    #valor da leitura do campo magnetico - MAG
-    MagFieldRaw ='' #valor da leitura do campo magnetico (RAW) - RAWMAG
-    Orient =''      #valor de leitura da orientacao - ORI 
-    Press =''       #valor de leitura de pressao - PRS 
-    Prox =''        #valor do leitor de proximidade - PRX
+    ACC =''          #valor da leitura do acelerometro - ACC
+    GYR =''         #valor da leitura do giroscopio - GYR
+    LGT =''         #valor da leitura de luminosidade - LGT
+    MAG =''         #valor da leitura do campo magnetico - MAG
+    RAWMAG =''      #valor da leitura do campo magnetico (RAW) - RAWMAG
+    ORI =''         #valor de leitura da orientacao - ORI 
+    PRS =''         #valor de leitura de pressao - PRS 
+    PRX =''        #valor do leitor de proximidade - PRX
 
 
 class coordXYZ:

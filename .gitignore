@@ -1,2 +1,5 @@
 .vscode/
 __pycache__/
+database1.json
+database2.json
+logs.txt

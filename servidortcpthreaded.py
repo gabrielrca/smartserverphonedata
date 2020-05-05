@@ -1,20 +1,23 @@
 import socket 
 from _thread import *
 import threading 
-from pymongo import MongoClient
+#from pymongo import MongoClient
 import json, pprint
 from usefulclasses import reading, coordXYZ, rawmagfields, orientationfields, timeOfReceive
 import datetime
 
 #criando a conexao e mantendo no banco para salvar os dados das leituras
-client = MongoClient('172.18.0.102')
+#client = MongoClient('172.18.0.102')
 #print(client.server_info())
-db=client['STORE_SENSORDATA']
-collection=db['sensordata']
+#db=client['STORE_SENSORDATA']
+#collection=db['sensordata']
 #Fim do codigo que abre a conexao
 
   
 print_lock = threading.Lock() 
+
+
+
 
 def deviceDescription(deviceIP):
     #aqui eu retorno uma tupla ID, descricao
@@ -24,12 +27,21 @@ def deviceDescription(deviceIP):
 
     if(deviceIP[0]=='192.168.1.231'):
         SensID = 'id_galaxyS3'
-        descr = 'Mesa do meu quarto embaixo da tela'
+        descr = '2-prat-mesa'
+    
+    if(deviceIP[0]=='192.168.1.232'):
+        SensID = 'id_motorolaAntigo'
+        descr = '2-prat-porta'
+    
+    if(deviceIP[0]=='192.168.1.233'):
+        SensID = 'id_galaxyS4'
+        descr = 'cima-vitrola'
         
     return SensID, descr
   
 
-def threaded(c, rcvAddr):
+
+def threaded(c, rcvAddr, leituraAnterior={}): #cria a variavel de leitura anterior pra soh salvar se as leituras foram diferentes e economizar espaco em disco
     #o objetivo dessa thread eh receber os dados e tratar e futuramente salvar no banco 
     while True: 
         
@@ -66,24 +78,24 @@ def threaded(c, rcvAddr):
             coord.x=fields[2]
             coord.y=fields[3]
             coord.z=fields[4]
-            thisReading.Acel = coord.__dict__
+            thisReading.ACC = coord.__dict__
         
         if(fields[1] == 'GYR'):
             coord = coordXYZ() #cada campo da cordenada ta subsequente no campo de recebimento
             coord.x=fields[2]
             coord.y=fields[3]
             coord.z=fields[4]
-            thisReading.Giros = coord.__dict__
+            thisReading.GYR = coord.__dict__
 
         if(fields[1] == 'LGT'):
-            thisReading.Luz = fields[2]
+            thisReading.LGT = fields[2]
 
         if(fields[1] == 'MAG'):
             coord = coordXYZ() #cada campo da cordenada ta subsequente no campo de recebimento
             coord.x=fields[2]
             coord.y=fields[3]
             coord.z=fields[4]
-            thisReading.MagField = coord.__dict__
+            thisReading.MAG = coord.__dict__
 
         if(fields[1] == 'RAWMAG'):
              rawmagfiedsvalue = rawmagfields() #cada campo dos valores ta subsequente no campo de recebimento
@@ -93,7 +105,7 @@ def threaded(c, rcvAddr):
              rawmagfiedsvalue.d = fields[5]
              rawmagfiedsvalue.e = fields[6] 
              rawmagfiedsvalue.f = fields[7]
-             thisReading.MagFieldRaw = rawmagfiedsvalue.__dict__
+             thisReading.RAWMAG = rawmagfiedsvalue.__dict__
         
 
         if(fields[1] == 'ORI'):
@@ -102,16 +114,17 @@ def threaded(c, rcvAddr):
             orientationvalues.b = fields[3]
             orientationvalues.c = fields[4]
             orientationvalues.d = fields[5]
-            thisReading.Orient=orientationvalues.__dict__
+            thisReading.ORI = orientationvalues.__dict__
 
         if(fields[1] == 'PRS'):
-            thisReading.Press = fields[2] #valor do campo pressao
+            thisReading.PRS = fields[2] #valor do campo pressao
 
         if(fields[1] == 'PRX'):
-            thisReading.Prox= fields[2] #valor do campo proximidade
+            thisReading.PRX =  fields[2] #valor do campo proximidade
         
-        #print(thisReading.__dict__)
-        collection.insert_one(thisReading.__dict__)
+
+        leituraAnterior = salvarLeitura(thisReading.__dict__, leituraAnterior) #salvo a leitura no banco ou na console e guardo a leitura anterior
+       
         
 
         
@@ -119,20 +132,41 @@ def threaded(c, rcvAddr):
             break
     
     c.close() #fecho a conexao
-  
+
+def salvarLeitura(leituraAtual, leituraAnterior):
+    if(leituraAnterior == {}): #para salvar a primeira leitura, verifico se a leitura anterior ainda eh vazia
+        print(leituraAtual) #salvo na console
+        #collection.insert_one(thisReading.__dict__) #salvo no banco
+        return leituraAtual
+    elif(leituraAnterior['ip'] == leituraAtual['ip'] and leituraAnterior[leituraAnterior['sensType']] == leituraAtual[leituraAtual['sensType']]):
+        #print('igual')
+        #collection.insert_one(thisReading.__dict__)
+        return leituraAtual #se for igual so retorno, nao salvo
+    else:
+        print(leituraAtual)
+        #collection.insert_one(thisReading.__dict__)
+        return leituraAtual
+
+
+def print_debug(thing_to_print, debug): #funcao so para saber o que printar
+    if(debug):
+        print(thing_to_print)
+
   
 def Main(): 
     host = "0.0.0.0" 
-    port = 555
+    port = 5555
+    debug = False #Variavel para informar se vai fazer print das informacoes da aplicacao ou so dos dados
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #crio o socket
     s.bind((host, port))  #bindo o socket
 
-    print("socket bindado na porta", port) 
+ 
+    print_debug("socket bindado na porta " + str(port), debug) 
   
     s.listen(5) #escuto
 
-    print("ouvindo o socket") 
+    print_debug("ouvindo o socket", debug) 
   
     while True: 
   
@@ -140,7 +174,7 @@ def Main():
 
         
 
-        print('Conectado ao ip :', addr[0], ' na porta :', addr[1])   
+        print_debug('Conectado ao ip : ' + str(addr[0]) + ' na porta : ' + str(addr[1]), debug)   
         start_new_thread(threaded, (c, addr)) #envio a conexao e a tupla da conexao addr (ip, porta) pra ser tratado na thread
 
     s.close() 
